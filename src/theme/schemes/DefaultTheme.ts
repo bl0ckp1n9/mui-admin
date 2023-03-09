@@ -54,6 +54,7 @@ export const DefaultTheme = createTheme({
                 },
             },
         },
+
         MuiCssBaseline: {
             styleOverrides: {
                 'html, body': {

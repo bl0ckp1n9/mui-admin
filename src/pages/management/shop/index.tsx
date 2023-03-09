@@ -1,19 +1,24 @@
 import {
     Box,
     Card,
+    CardHeader,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
     TableCell,
     TableRow,
     Typography,
-    useTheme,
 } from '@mui/material';
 import BaseLayout from '@/layouts/BaseLayout';
 import { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import RegularTable from '@/components/RegularTable';
 import { ShopItemsInterface } from '@/pages/api/shop';
-import axios from 'axios';
 import { getNumberOfPage } from '@/utils/getNumberOfPage';
 import TablePagination from '@/components/RegularTable/TablePagination';
 import { fetchShopData } from '@/api/shop';
+import { string } from 'prop-types';
 
 const mockTableHead = [
     '몰',
@@ -76,30 +81,60 @@ export const mockTableContents = [
         date: '2022.06.07 22:00:21',
     },
 ];
+
 export default function Shop() {
     const [shopData, setShopData] = useState<ShopItemsInterface | null>(null);
     const [totalNumberOfPages, setTotalNumberOfPages] = useState(0); // 총 아이템 개수
-    const [itemsCountOfPerPage, setItemsCountOfPerPage] = useState(5); // 한 페이지당 아이템 개수
+    const [rowsPerPage, setRowsPerPage] = useState('5'); // 한 페이지당 아이템 개수
     const [page, setPage] = useState(1); // page number
 
-    const onChange = (e: ChangeEvent<unknown>, page: number) => {
+    const onHandlePagination = (
+        e: ChangeEvent<unknown>,
+        page: number
+    ): void => {
         setPage(page);
     };
 
+    const onHandleRowsPerPage = (
+        e: SelectChangeEvent<HTMLInputElement | string>
+    ): void => {
+        const { value } = e.target;
+        setRowsPerPage(value as string);
+    };
+
     useEffect(() => {
-        fetchShopData(page, itemsCountOfPerPage).then((data) => {
+        const rowsPerPageInt = parseInt(rowsPerPage);
+        fetchShopData(page, rowsPerPageInt).then((data) => {
             setShopData(data.contents);
             const numberOfPage = getNumberOfPage(
                 data.totalNumberOfItems,
-                itemsCountOfPerPage
+                rowsPerPageInt
             );
             setTotalNumberOfPages(numberOfPage);
         });
-    }, [page]);
+    }, [page, rowsPerPage]);
 
     return (
         <Box>
             <Card>
+                <CardHeader
+                    action={
+                        <Box width={150}>
+                            <FormControl fullWidth>
+                                <InputLabel>Rows per page</InputLabel>
+                                <Select
+                                    onChange={onHandleRowsPerPage}
+                                    value={rowsPerPage}
+                                    defaultValue={rowsPerPage}
+                                >
+                                    <MenuItem value={5}>5</MenuItem>
+                                    <MenuItem value={10}>10</MenuItem>
+                                    <MenuItem value={15}>15</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    }
+                />
                 <RegularTable
                     types={mockTableHead}
                     pagination={
@@ -107,7 +142,7 @@ export default function Shop() {
                             count={totalNumberOfPages}
                             props={{
                                 page,
-                                onChange,
+                                onChange: onHandlePagination,
                             }}
                         />
                     }
