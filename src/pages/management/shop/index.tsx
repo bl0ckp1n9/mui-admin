@@ -18,7 +18,6 @@ import { ShopItemsInterface } from '@/pages/api/shop';
 import { getNumberOfPage } from '@/utils/getNumberOfPage';
 import TablePagination from '@/components/RegularTable/TablePagination';
 import { fetchShopData } from '@/api/shop';
-import { string } from 'prop-types';
 
 const mockTableHead = [
     '몰',
@@ -30,62 +29,12 @@ const mockTableHead = [
     '삭제',
 ];
 
-export const mockTableContents = [
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 1,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 2,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 3,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 4,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 5,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 6,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-    {
-        mall: 'LG생건물 (lgbeauty01)',
-        id: 7,
-        name: '빌리프',
-        contractAddr: '0x8A7BA0f4D72c3C68c956Ab9F5B8876125C677784',
-        date: '2022.06.07 22:00:21',
-    },
-];
+const selectRowsPerPage = [5, 10, 15];
 
 export default function Shop() {
     const [shopData, setShopData] = useState<ShopItemsInterface | null>(null);
     const [totalNumberOfPages, setTotalNumberOfPages] = useState(0); // 총 아이템 개수
-    const [rowsPerPage, setRowsPerPage] = useState('5'); // 한 페이지당 아이템 개수
+    const [rowsPerPage, setRowsPerPage] = useState(5); // 한 페이지당 아이템 개수
     const [page, setPage] = useState(1); // page number
 
     const onHandlePagination = (
@@ -96,44 +45,48 @@ export default function Shop() {
     };
 
     const onHandleRowsPerPage = (
-        e: SelectChangeEvent<HTMLInputElement | string>
+        e: SelectChangeEvent<HTMLInputElement | number>
     ): void => {
         const { value } = e.target;
-        setRowsPerPage(value as string);
+        setRowsPerPage(parseInt(value as string));
     };
 
     useEffect(() => {
-        const rowsPerPageInt = parseInt(rowsPerPage);
-        fetchShopData(page, rowsPerPageInt).then((data) => {
+        fetchShopData(page, rowsPerPage).then((data) => {
             setShopData(data.contents);
             const numberOfPage = getNumberOfPage(
                 data.totalNumberOfItems,
-                rowsPerPageInt
+                rowsPerPage
             );
             setTotalNumberOfPages(numberOfPage);
         });
     }, [page, rowsPerPage]);
 
     return (
-        <Box>
+        <Box marginTop={10}>
             <Card>
                 <CardHeader
                     action={
                         <Box width={150}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth variant="outlined">
                                 <InputLabel>Rows per page</InputLabel>
                                 <Select
+                                    label="Rows per page"
                                     onChange={onHandleRowsPerPage}
                                     value={rowsPerPage}
-                                    defaultValue={rowsPerPage}
+                                    displayEmpty
+                                    autoWidth
                                 >
-                                    <MenuItem value={5}>5</MenuItem>
-                                    <MenuItem value={10}>10</MenuItem>
-                                    <MenuItem value={15}>15</MenuItem>
+                                    {selectRowsPerPage.map((count) => (
+                                        <MenuItem key={count} value={count}>
+                                            {count}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                         </Box>
                     }
+                    title="Shop"
                 />
                 <RegularTable
                     types={mockTableHead}

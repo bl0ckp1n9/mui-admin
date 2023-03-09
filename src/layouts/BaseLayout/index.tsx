@@ -1,9 +1,16 @@
-import { Box } from '@mui/material';
+import { Box, Container, styled } from '@mui/material';
 import Sidebar from '@/layouts/BaseLayout/Sidebar';
+import { ReactNode } from 'react';
+import Header from '@/layouts/BaseLayout/Header';
 
 interface BaseLayoutProps {
-    children?: React.ReactNode;
+    children?: ReactNode;
 }
+
+const Main = styled(Box)(({ theme }) => ({
+    flex: 999,
+    height: '100%',
+}));
 
 export default function BaseLayout({ children }: BaseLayoutProps) {
     return (
@@ -15,15 +22,15 @@ export default function BaseLayout({ children }: BaseLayoutProps) {
         >
             <Sidebar />
 
-            <Box
+            <Main
                 sx={{
                     flex: 999,
-                    paddingX: '2rem',
-                    paddingY: '4rem',
+                    height: '100%',
                 }}
             >
-                {children}
-            </Box>
+                <Header />
+                <Container maxWidth="lg">{children}</Container>
+            </Main>
         </Box>
     );
 }

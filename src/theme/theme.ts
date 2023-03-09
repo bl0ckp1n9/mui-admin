@@ -13,6 +13,7 @@ declare module '@mui/material/styles/createTheme' {
         colors: {
             primary: string;
             secondary: string;
+            error: string;
             alpha: {
                 white: {
                     5: string;
@@ -41,6 +42,7 @@ declare module '@mui/material/styles/createTheme' {
         colors: {
             primary: string;
             secondary: string;
+            error: string;
             alpha: {
                 white: {
                     5: string;

@@ -15,6 +15,7 @@ const themeColors = {
 const colors = {
     primary: themeColors.primary,
     secondary: themeColors.secondary,
+    error: themeColors.error,
     alpha: {
         white: {
             5: alpha(themeColors.white, 0.02),
@@ -44,6 +45,10 @@ export const DefaultTheme = createTheme({
             styleOverrides: {
                 root: {
                     backgroundColor: themeColors.primary,
+                    '& .MuiTableCell-root': {
+                        fontSize: '1.25rem',
+                        color: themeColors.white,
+                    },
                 },
             },
         },
