@@ -2,27 +2,23 @@ import {
     Box,
     Button,
     Card,
-    CardActionArea,
     CardActions,
     CardContent,
     CardHeader,
     Divider,
     FormControl,
     Grid,
-    Input,
     InputAdornment,
     styled,
     Typography,
 } from '@mui/material';
-import { Email, Key, Person } from '@mui/icons-material';
+import { Key, Person } from '@mui/icons-material';
 import AdornmentInput from '@/components/AdornmentInput';
 import { useForm } from 'react-hook-form';
-import { signUp } from '@/api/signup';
-
-const SignInContainer = styled(Box)(({ theme }) => ({
-    height: '700px',
-    width: '400px',
-}));
+import { useRouter } from 'next/router';
+import { signIn, useSession } from 'next-auth/react';
+import LoginLayout from '@/layouts/LoginLayout';
+import { ReactElement } from 'react';
 
 interface SignInInterface {
     email: string;
@@ -36,109 +32,105 @@ export default function SignIn() {
         formState: { errors },
         setError,
     } = useForm<SignInInterface>();
+    const router = useRouter();
+    const { data: session, status } = useSession();
     const onHandleSubmit = async (data: SignInInterface) => {
         const { email, password } = data;
-        console.log(email, password);
+        const resp = await signIn('user-credentials', {
+            email,
+            password,
+            redirect: false,
+        });
     };
     return (
-        <Box
-            sx={{
-                height: '100%',
-                width: '100%',
-            }}
-        >
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    height: '100%',
-                }}
-            >
-                <SignInContainer>
-                    <Box>
-                        <Typography
-                            variant="h2"
-                            sx={{ textAlign: 'center', marginBottom: '2rem' }}
-                        >
-                            LG 생활 건강
-                        </Typography>
-                    </Box>
-                    <Card sx={{ boxShadow: 3 }}>
-                        <CardHeader title="Sign In" />
-                        <CardContent>
-                            <Box
-                                component="form"
-                                onSubmit={handleSubmit(onHandleSubmit)}
-                            >
-                                <FormControl>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12}>
-                                            <AdornmentInput
-                                                adornment={
-                                                    <InputAdornment position="start">
-                                                        <Person fontSize="large" />
-                                                    </InputAdornment>
-                                                }
-                                                props={{
-                                                    id: 'email',
-                                                    type: 'email',
-                                                    variant: 'standard',
-                                                    fullWidth: true,
-                                                    ...register('email'),
-                                                }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <AdornmentInput
-                                                adornment={
-                                                    <InputAdornment position="start">
-                                                        <Key fontSize="large" />
-                                                    </InputAdornment>
-                                                }
-                                                props={{
-                                                    id: 'password',
-                                                    type: 'password',
-                                                    variant: 'standard',
-                                                    fullWidth: true,
-                                                    ...register('password'),
-                                                }}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                </FormControl>
-                            </Box>
-                        </CardContent>
-                        <CardActions sx={{ marginTop: '2rem' }}>
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                sx={{ height: '50px' }}
-                            >
-                                Login
-                            </Button>
-                        </CardActions>
-                        <CardActions>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginX: 'auto',
-                                }}
-                            >
-                                <Button>비밀번호 재설정</Button>
-                                <Divider
-                                    orientation="vertical"
-                                    variant="middle"
-                                    flexItem
-                                />
-                                <Button>운용자 등록</Button>
-                            </Box>
-                        </CardActions>
-                    </Card>
-                </SignInContainer>
+        <>
+            <Box>
+                <Typography
+                    variant="h2"
+                    sx={{ textAlign: 'center', marginBottom: '2rem' }}
+                >
+                    LG 생활 건강
+                </Typography>
             </Box>
-        </Box>
+            <Card sx={{ boxShadow: 3 }}>
+                <CardHeader title="Sign In" />
+                <CardContent>
+                    <Box
+                        component="form"
+                        onSubmit={handleSubmit(onHandleSubmit)}
+                    >
+                        <FormControl>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <AdornmentInput
+                                        adornment={
+                                            <InputAdornment position="start">
+                                                <Person fontSize="large" />
+                                            </InputAdornment>
+                                        }
+                                        props={{
+                                            id: 'email',
+                                            type: 'email',
+                                            variant: 'standard',
+                                            fullWidth: true,
+                                            ...register('email'),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <AdornmentInput
+                                        adornment={
+                                            <InputAdornment position="start">
+                                                <Key fontSize="large" />
+                                            </InputAdornment>
+                                        }
+                                        props={{
+                                            id: 'password',
+                                            type: 'password',
+                                            variant: 'standard',
+                                            fullWidth: true,
+                                            ...register('password'),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        fullWidth
+                                        sx={{ height: '50px' }}
+                                    >
+                                        로그인
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </FormControl>
+                    </Box>
+                </CardContent>
+                <CardActions>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginX: 'auto',
+                        }}
+                    >
+                        <Button>비밀번호 재설정</Button>
+                        <Divider
+                            orientation="vertical"
+                            variant="middle"
+                            flexItem
+                        />
+                        <Button onClick={() => router.push('/signup')}>
+                            운용자 등록
+                        </Button>
+                    </Box>
+                </CardActions>
+            </Card>
+        </>
     );
 }
+
+SignIn.getLayout = function getLayout(page: ReactElement) {
+    return <LoginLayout>{page}</LoginLayout>;
+};

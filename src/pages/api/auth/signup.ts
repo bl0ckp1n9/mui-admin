@@ -10,7 +10,7 @@ export default async function handler(
 
     const { email, password } = req.body;
     try {
-        const response = await prisma.users.create({
+        const response = await prisma.user.create({
             data: {
                 email,
                 password,

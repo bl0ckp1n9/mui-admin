@@ -3,6 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import ThemeProviderWrapper from '@/theme/ThemeProvider';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode } from 'react';
+import { SessionProvider } from 'next-auth/react';
 
 type NextPageWithLayout = NextPage & {
     getLayout?: (page: ReactElement) => ReactNode;
@@ -11,14 +12,19 @@ type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
     Component: NextPageWithLayout;
 };
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+export default function App({
+    Component,
+    pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) {
     const getLayout = Component.getLayout ?? ((page) => page);
     return (
         <>
-            <ThemeProviderWrapper>
-                <CssBaseline />
-                {getLayout(<Component {...pageProps} />)}
-            </ThemeProviderWrapper>
+            <SessionProvider session={session}>
+                <ThemeProviderWrapper>
+                    <CssBaseline />
+                    {getLayout(<Component {...pageProps} />)}
+                </ThemeProviderWrapper>
+            </SessionProvider>
         </>
     );
 }
